@@ -1,0 +1,48 @@
+pip install MetaTrader5 requests
+import MetaTrader5 as mt5
+
+# الاتصال بـ MT5
+if not mt5.initialize():
+    print("فشل الاتصال بـ MetaTrader 5")
+    mt5.shutdown()
+def get_indicators(symbol):
+    # الحصول على بيانات الأسعار
+    rates = mt5.copy_rates_from_pos(symbol, mt5.TIMEFRAME_H1, 0, 100)
+    
+    # حساب المؤشرات
+    rsi = mt5.indicators.rsi(rates['close'], period=14)
+    macd = mt5.indicators.macd(rates['close'], fast_period=12, slow_period=26, signal_period=9)
+    # يمكنك إضافة المزيد من المؤشرات هنا
+    
+    return rsi, macd
+def trade(symbol):
+    rsi, macd = get_indicators(symbol)
+    
+    if rsi[-1] < 30 and macd[-1] > 0:
+        # شراء
+        mt5.order_send(symbol, mt5.ORDER_BUY, 0.1, mt5.symbol_info_tick(symbol).ask, 2, 0, 0, "Buy Order", 0, 0, mt5.COLOR_GREEN)
+    elif rsi[-1] > 70 and macd[-1] < 0:
+        # بيع
+        mt5.order_send(symbol, mt5.ORDER_SELL, 0.1, mt5.symbol_info_tick(symbol).bid, 2, 0, 0, "Sell Order", 0, 0, mt5.COLOR_RED)
+إنشاء واجهة HTML
+
+يمكنك استخدام HTML وJavaScript لإنشاء واجهة بسيطة للتحكم في البوت:
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>بوت التداول</title>
+</head>
+<body>
+    <h1>تحكم في بوت التداول</h1>
+    <button onclick="startBot()">ابدأ البوت</button>
+    <script>
+        function startBot() {
+            // استدعاء API لبدء البوت
+            fetch('/start-bot')
+                .then(response => response.json())
+                .then(data => console.log(data));
+        }
+    </script>
+</body>
+</html>
